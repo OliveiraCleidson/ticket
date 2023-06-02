@@ -1,0 +1,23 @@
+@startuml bigpicture
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' Clientside
+Container(webApp, 'Company Hub', 'Typescript / ReactJS', 'SPA for managing company information, tickets, etc.')
+
+' Serverside
+Container(authServer, 'Auth Server', '.NET Core / Identity Server', 'Handles authentication and authorization')
+Container(ticketAPI, 'Ticket API', 'Go Lang', 'API for managing tickets')
+Container(clientGateway, 'Client Gateway', 'Go Lang / KrakenD', 'API Gateway for authenticating and authorizing requests')
+Container(salesAPI, 'Sales API', 'Go Lang', 'API for managing sales, sales funnel, etc.')
+Container(kanbanAPI, 'Kanban API', 'Go Lang', 'API for managing kanban boards, cards e etc.')
+
+
+Rel(webApp, authServer, 'Authenticate user using OpenID Connect', 'JSON/HTTPS')
+Rel(webApp, clientGateway, 'Request resources from', 'JSON/HTTPS')
+Rel_L(clientGateway, authServer, 'Checks access and authorization using OAuth2 access tokens', 'JSON/HTTPS')
+Rel(clientGateway, ticketAPI, 'Forward requests to', 'gRPC')
+Rel(clientGateway, salesAPI, 'Forward requests to', 'gRPC')
+Rel(ticketAPI, kanbanAPI, 'Forward requests to', 'gRPC')
+Rel(salesAPI, kanbanAPI, 'Forward requests to', 'gRPC')
+
+@enduml
